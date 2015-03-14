@@ -1,16 +1,20 @@
 class BookSearchesController < ApplicationController
 
   def index
+    @query = params[:search].to_s
     @bookfind = BookFetcher.new
 
-    if params[:author_input].present?
+    if params[:search].present?
       @authors = []
-      authors_search = @bookfind.get_books(params[:author_input])
-      authors_search.map.with_index do |item, index|
-        @authors << authors_search[index]["volumeInfo"]["authors"][0]
-    end
+      @titles = []
+      books_search = @bookfind.get_books(params[:search])
 
-    @authors_final = @authors.map
+        books_search.map.with_index do |item, index|
+          @authors << books_search[index]["volumeInfo"]["authors"][0]
+          @titles << books_search[index]["volumeInfo"]["title"]
+        end
+    books = @titles.zip(@authors)
+    @books_final = books.map {|author, book| "#{author}, #{book}"}
     end
   end
 
